@@ -35,12 +35,12 @@ public class CarController : MonoBehaviour
     public float mobileControls, mobileControls2;
 
     private Rigidbody rb;
-    private FuelSystem fuel;
+    // private FuelSystem fuel;
     
     void Start()
 	{
 	    rb = GetComponent<Rigidbody>();
-	    fuel = GetComponent<FuelSystem>();
+	    // fuel = GetComponent<FuelSystem>();
 	}
 
     void Update()
@@ -64,12 +64,13 @@ public class CarController : MonoBehaviour
 	{
 	    float effectiveInput = mobileControls != 0 ? mobileControls : inputVertical;
 	
-	    if (fuel != null && !fuel.HasFuel)
+	    /* if (fuel != null && !fuel.HasFuel)
 	    {
 	        rearLeftWheel.motorTorque = 0;
 	        rearRightWheel.motorTorque = 0;
 	        return;
 	    }
+             */ 
 	
 	    float motorTorque = effectiveInput * acceleration;
 	
