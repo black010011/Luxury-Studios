@@ -35,12 +35,12 @@ public class CarController : MonoBehaviour
     public float mobileControls, mobileControls2;
 
     private Rigidbody rb;
-    private FuelSystem fuel;
+    private Gasolina fuel;
     
     void Start()
 	{
 	    rb = GetComponent<Rigidbody>();
-	    fuel = GetComponent<FuelSystem>();
+	    fuel = GetComponent<Gasolina>();
 	}
 
     void Update()
