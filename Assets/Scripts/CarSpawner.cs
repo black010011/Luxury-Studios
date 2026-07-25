@@ -44,6 +44,9 @@ public class CarSpawner : MonoBehaviour
 
     void SpawnCarsInRange()
     {
+        // Remove any waypoints that were destroyed since we cached them in Start()
+        waypoints.RemoveAll(w => w == null);
+
         foreach (Transform waypoint in waypoints)
         {
             // Check the squared distance between player and waypoint
@@ -70,12 +73,23 @@ public class CarSpawner : MonoBehaviour
             Transform waypoint = entry.Key;
             GameObject car = entry.Value;
 
+            // Waypoint or car may already have been destroyed elsewhere; clean up and skip
+            if (waypoint == null || car == null)
+            {
+                waypointsToDespawn.Add(waypoint);
+                continue;
+            }
+
             float sqrDistanceToPlayer = (player.position - car.transform.position).sqrMagnitude;
 
             // Despawn car if it's out of max range
             if (sqrDistanceToPlayer > maxSpawnDistanceSqr)
             {
-                Destroy(car.GetComponent<CarAI>().driver);
+                CarAI carAI = car.GetComponent<CarAI>();
+                if (carAI != null && carAI.driver != null)
+                {
+                    Destroy(carAI.driver);
+                }
                 Destroy(car);
                 waypointsToDespawn.Add(waypoint);
             }

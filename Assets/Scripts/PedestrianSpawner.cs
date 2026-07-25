@@ -106,14 +106,14 @@ public class PedestrianSpawner : MonoBehaviour
 
         for (int step = 0; step < 5; step++) // Try multiple ranges from close to further out
         {
-            for (int i = 0; i < 5; i++) // Try 5 attempts at each radius
+            for (int i = 0; i < 10; i++) // Try 10 attempts at each radius
             {
                 Vector3 randomDirection = Random.insideUnitSphere * currentRadius;
                 randomDirection += player.position;
                 randomDirection.y = player.position.y; // Keep it level with the player
 
                 NavMeshHit hit;
-                if (NavMesh.SamplePosition(randomDirection, out hit, 10f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(randomDirection, out hit, 20f, NavMesh.AllAreas))
                 {
                     // Check if the spawn position is on either footpath or cross area
                     int area = hit.mask;
