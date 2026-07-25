@@ -14945,7 +14945,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.09702794, y: -0.019702865, z: 0.0019213773, w: 0.99508476}
-  m_LocalPosition: {x: 0.29, y: 0.52, z: -7.66}
+  m_LocalPosition: {x: -0.84, y: -5.08, z: 20.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -89801,62 +89801,6 @@ MonoBehaviour:
   healthBar: {fileID: 1578428153}
   safeFallHeight: 4
   damageMultiplier: 10
---- !u!114 &1919300521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 414759510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bd9bf1cbb1d7714c8a97799513367cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Thirst
-  maxThirst: 100
-  currentThirst: 100
-  thirstBar: {fileID: 1328750857}
-  idleDrain: 0.03
-  walkDrain: 0.07
-  runDrain: 0.15
-  driveDrain: 0.04
-  vida: {fileID: 1919300520}
-  damagePerSecond: 5
---- !u!114 &1919300522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 414759510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8d2096b5a9d9984eb8a3b81288fc208, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Money
-  money: 1000
-  moneyText: {fileID: 506659564}
---- !u!114 &1919300523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 414759510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd1063ffce06dd64db97d662103b2248, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Food
-  maxFood: 100
-  currentFood: 100
-  foodBar: {fileID: 491646892}
-  idleDrain: 0.02
-  walkDrain: 0.05
-  runDrain: 0.12
-  driveDrain: 0.03
-  vida: {fileID: 1919300520}
-  damagePerSecond: 4
 --- !u!114 &1919300524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101802,15 +101746,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7892742838745068745, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -514.43
+      value: -443.43
       objectReference: {fileID: 0}
     - target: {fileID: 7892742838745068745, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.97
+      value: 1.57
       objectReference: {fileID: 0}
     - target: {fileID: 7892742838745068745, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 111.18
+      value: 97.32
       objectReference: {fileID: 0}
     - target: {fileID: 7892742838745068745, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -101892,15 +101836,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1919300524}
-    - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1919300523}
-    - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1919300522}
-    - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1919300521}
   m_SourcePrefab: {fileID: 100100000, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
