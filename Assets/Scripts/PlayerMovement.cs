@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -5,8 +6,18 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed = 3.5f;
     public float sprintSpeed = 6.5f;
+    public float crouchSpeed = 1.8f;
     public float rotationSpeed = 12f;
     public float gravity = -9.81f;
+    public float acceleration = 8f;   // how fast currentSpeed ramps up
+    public float deceleration = 10f;  // how fast currentSpeed ramps down
+
+    [Header("Jump")]
+    public float jumpHeight = 1.2f;
+
+    [Header("Crouch")]
+    public float crouchHeight = 1f;
+    public float crouchTransitionSpeed = 8f;
 
     [Header("References")]
     public Transform cameraTransform;
@@ -14,19 +25,38 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
     private Animator animator;
+    private HashSet<string> animatorParams = new HashSet<string>();
 
     private Vector3 moveDirection;
     private Vector3 velocity;
 
-    private float currentSpeed;
+    private float currentSpeed;  // smoothed, actual speed applied this frame
+    private float targetSpeed;
 
     private bool isSprinting = false;
+    private bool isCrouching = false;
     public bool isAiming = false;
+
+    private float standHeight;
+    private Vector3 standCenter;
+    private Vector3 crouchCenter;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+
+        if (animator != null)
+        {
+            foreach (AnimatorControllerParameter param in animator.parameters)
+            {
+                animatorParams.Add(param.name);
+            }
+        }
+
+        standHeight = controller.height;
+        standCenter = controller.center;
+        crouchCenter = new Vector3(standCenter.x, standCenter.y - (standHeight - crouchHeight) / 2f, standCenter.z);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -35,7 +65,9 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         HandleAiming();
+        HandleCrouch();
         HandleMovement();
+        HandleJump();
         HandleGravity();
         HandleRotation();
         HandleAnimations();
@@ -67,11 +99,26 @@ public class PlayerMovement : MonoBehaviour
         isSprinting =
             Input.GetKey(KeyCode.LeftShift) &&
             vertical > 0.1f &&
-            !isAiming;
+            !isAiming &&
+            !isCrouching;
 
-        currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        float maxSpeed = isCrouching ? crouchSpeed : (isSprinting ? sprintSpeed : walkSpeed);
+        targetSpeed = moveDirection.sqrMagnitude > 0.01f ? maxSpeed : 0f;
+
+        // Ease toward the target speed instead of snapping, so starting/stopping/sprinting feels smooth
+        float rate = targetSpeed > currentSpeed ? acceleration : deceleration;
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * Time.deltaTime);
 
         controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+    }
+
+    void HandleJump()
+    {
+        if (controller.isGrounded && !isCrouching && Input.GetButtonDown("Jump"))
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            SetAnimatorTrigger("Jump");
+        }
     }
 
     void HandleGravity()
@@ -84,6 +131,37 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    void HandleCrouch()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl) && controller.isGrounded)
+        {
+            // Only stand back up if there is room above the player's head
+            if (isCrouching && !CanStandUp())
+            {
+                // stay crouched, ceiling in the way
+            }
+            else
+            {
+                isCrouching = !isCrouching;
+            }
+        }
+
+        float targetHeight = isCrouching ? crouchHeight : standHeight;
+        Vector3 targetCenter = isCrouching ? crouchCenter : standCenter;
+
+        controller.height = Mathf.Lerp(controller.height, targetHeight, crouchTransitionSpeed * Time.deltaTime);
+        controller.center = Vector3.Lerp(controller.center, targetCenter, crouchTransitionSpeed * Time.deltaTime);
+
+        SetAnimatorBool("IsCrouching", isCrouching);
+    }
+
+    bool CanStandUp()
+    {
+        float clearance = standHeight - controller.height;
+        Vector3 origin = transform.position + Vector3.up * controller.height;
+        return !Physics.Raycast(origin, Vector3.up, clearance, ~0, QueryTriggerInteraction.Ignore);
     }
 
     void HandleRotation()
@@ -122,16 +200,13 @@ public class PlayerMovement : MonoBehaviour
         if (animator == null)
             return;
 
-        float speed = moveDirection.magnitude;
-
-        if (isSprinting)
-            speed = 1f;
-        else
-            speed *= 0.5f;
+        // Drive the blend tree from the actual smoothed speed (0 = idle, 1 = full sprint)
+        // instead of a hardcoded step, so walk/run transitions match real movement.
+        float normalizedSpeed = sprintSpeed > 0f ? currentSpeed / sprintSpeed : 0f;
 
         animator.SetFloat(
             "Speed",
-            speed,
+            normalizedSpeed,
             0.1f,
             Time.deltaTime
         );
@@ -215,5 +290,21 @@ public class PlayerMovement : MonoBehaviour
                 Time.deltaTime * 8f
             )
         );
+    }
+
+    void SetAnimatorBool(string name, bool value)
+    {
+        if (animator != null && animatorParams.Contains(name))
+        {
+            animator.SetBool(name, value);
+        }
+    }
+
+    void SetAnimatorTrigger(string name)
+    {
+        if (animator != null && animatorParams.Contains(name))
+        {
+            animator.SetTrigger(name);
+        }
     }
 }

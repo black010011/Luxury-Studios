@@ -18,6 +18,11 @@ public class CarSpawner : MonoBehaviour
     private float minSpawnDistanceSqr;
     private float maxSpawnDistanceSqr;
 
+    private const float checkInterval = 0.25f; // Only re-check spawn/despawn a few times per second, not every frame
+    private float nextCheckTime;
+
+    private readonly Collider[] overlapBuffer = new Collider[16]; // Reused buffer, avoids per-call GC allocation
+
     void Start()
     {
         // Calculate squared distances for comparison
@@ -33,10 +38,14 @@ public class CarSpawner : MonoBehaviour
 
     void Update()
     {
+        if (Time.time < nextCheckTime)
+            return;
+
+        nextCheckTime = Time.time + checkInterval;
+
         if (carCount < maxCars)
         {
             SpawnCarsInRange();
-            print("spawning");
         }
         DespawnCarsOutOfRange();
         carCount = activeCars.Count;
@@ -139,13 +148,13 @@ public class CarSpawner : MonoBehaviour
 
     bool IsObjectNearby(Vector3 position)
     {
-        // Check for any colliders within the spawn radius around the waypoint
-        Collider[] colliders = Physics.OverlapSphere(position, spawnRadius);
+        // Check for any colliders within the spawn radius around the waypoint (non-alloc: no per-call GC garbage)
+        int count = Physics.OverlapSphereNonAlloc(position, spawnRadius, overlapBuffer);
 
-        foreach (Collider collider in colliders)
+        for (int i = 0; i < count; i++)
         {
             // Ignore the terrain or waypoints themselves
-            if (collider.CompareTag("Car"))
+            if (overlapBuffer[i].CompareTag("Car"))
             {
                 return true; // Object is nearby
             }

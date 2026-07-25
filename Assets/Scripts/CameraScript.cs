@@ -47,8 +47,10 @@ public class CameraScript : MonoBehaviour
         // Follow the player
         FollowTarget();
 
-        // Only rotate the camera if the pointer is not over UI
-        if (!IsPointerOverUI())
+        // On PC the cursor is locked for mouse-look, so UI raycasts under the
+        // fixed cursor position shouldn't block camera rotation. The UI check
+        // is only meaningful for touch controls (mobile joystick).
+        if (onpc || !IsPointerOverUI())
         {
             RotateCamera();
         }
