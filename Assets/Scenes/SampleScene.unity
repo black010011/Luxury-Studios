@@ -89816,6 +89816,48 @@ MonoBehaviour:
   maxArmor: 100
   currentArmor: 0
   armorBar: {fileID: 287802842}
+--- !u!114 &1919300527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414759510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1063ffce06dd64db97d662103b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Food
+  maxFood: 100
+  currentFood: 100
+  foodBar: {fileID: 491646892}
+  idleDrain: 0.02
+  walkDrain: 0.05
+  runDrain: 0.12
+  driveDrain: 0.03
+  vida: {fileID: 1919300520}
+  damagePerSecond: 4
+--- !u!114 &1919300528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414759510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd9bf1cbb1d7714c8a97799513367cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Thirst
+  maxThirst: 100
+  currentThirst: 100
+  thirstBar: {fileID: 1328750857}
+  idleDrain: 0.03
+  walkDrain: 0.07
+  runDrain: 0.15
+  driveDrain: 0.04
+  vida: {fileID: 1919300520}
+  damagePerSecond: 5
 --- !u!1 &1920543858
 GameObject:
   m_ObjectHideFlags: 0
@@ -101486,7 +101528,7 @@ PrefabInstance:
       objectReference: {fileID: 506135571}
     - target: {fileID: 3296118058146207315, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: walkSpeed
-      value: 30
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3296118058146207315, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       propertyPath: cameraTransform
@@ -101836,6 +101878,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1919300524}
+    - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1919300527}
+    - targetCorrespondingSourceObject: {fileID: 7404893500020895347, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1919300528}
   m_SourcePrefab: {fileID: 100100000, guid: 88db7a2f7e5894341a2d7c3a45083a4f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
