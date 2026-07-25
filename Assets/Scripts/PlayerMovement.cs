@@ -19,6 +19,10 @@ public class PlayerMovement : MonoBehaviour
     public float crouchHeight = 1f;
     public float crouchTransitionSpeed = 8f;
 
+    [Header("Ground Check")]
+    public float groundCheckDistance = 0.3f; // extra distance below the capsule to sweep for ground
+    public LayerMask groundMask = ~0;        // everything by default
+
     [Header("References")]
     public Transform cameraTransform;
     public Transform upperBodyBone;
@@ -80,6 +84,14 @@ public class PlayerMovement : MonoBehaviour
         HandleUpperBodyAim();
     }
 
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+        {
+            // Re-lock the cursor; losing focus (alt-tab, clicking the Console, etc.) frees it
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
         else
         {
             // The OS can drop key-up events on focus loss (common on Linux/Wayland), which would
