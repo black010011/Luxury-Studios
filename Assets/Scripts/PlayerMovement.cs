@@ -80,6 +80,17 @@ public class PlayerMovement : MonoBehaviour
         HandleUpperBodyAim();
     }
 
+        else
+        {
+            // The OS can drop key-up events on focus loss (common on Linux/Wayland), which would
+            // otherwise leave Shift/WASD "stuck" held down forever. Force everything back to idle.
+            isSprinting = false;
+            moveDirection = Vector3.zero;
+            targetSpeed = 0f;
+            currentSpeed = 0f;
+        }
+    }
+
     void HandleMovement()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -112,9 +123,33 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(moveDirection * currentSpeed * Time.deltaTime);
     }
 
+    // CharacterController.isGrounded is only set from the last Move() collision flags and is
+    // notoriously unreliable (can stay false on flat ground). Do our own sweep instead.
+    bool IsGrounded()
+    {
+        if (controller.isGrounded)
+            return true;
+
+        Vector3 origin = transform.position + controller.center + Vector3.up * (controller.height / 2f - controller.radius);
+        float sweepDistance = controller.height / 2f - controller.radius + groundCheckDistance;
+
+        // Exclude the player's own layer so the sweep can't self-detect the CharacterController's collider
+        int mask = groundMask & ~(1 << gameObject.layer);
+
+        return Physics.SphereCast(
+            origin,
+            controller.radius * 0.95f,
+            Vector3.down,
+            out _,
+            sweepDistance,
+            mask,
+            QueryTriggerInteraction.Ignore
+        );
+    }
+
     void HandleJump()
     {
-        if (controller.isGrounded && !isCrouching && Input.GetButtonDown("Jump"))
+        if (IsGrounded() && !isCrouching && Input.GetButtonDown("Jump"))
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             SetAnimatorTrigger("Jump");
@@ -123,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleGravity()
     {
-        if (controller.isGrounded && velocity.y < 0f)
+        if (IsGrounded() && velocity.y < 0f)
         {
             velocity.y = -2f;
         }
@@ -135,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleCrouch()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl) && controller.isGrounded)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && IsGrounded())
         {
             // Only stand back up if there is room above the player's head
             if (isCrouching && !CanStandUp())
