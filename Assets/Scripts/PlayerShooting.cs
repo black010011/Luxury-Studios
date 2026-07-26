@@ -1,62 +1,52 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class PlayerShooting : MonoBehaviour
 {
-    [Header("Shooting Settings")]
-    public Transform bulletSpawnPoint;
-    public float fireRate = 0.2f;
+    [Header("Fire")]
+    public float fireRate = 0.15f;
 
-    private bool isAiming;
-    private float nextFireTime;
+    [Header("Ammo")]
+    public WeaponAmmo weaponAmmo;
 
+    [Header("Player")]
     public PlayerMovement player;
 
     [Header("Effects")]
     public ParticleSystem muzzleFlash;
     public AudioSource gunAudio;
-    public Animation gun;
 
-    [Header("UI")]
-    public GameObject crosshair;
+    private float nextFireTime;
 
     void Update()
     {
-        isAiming = player.isAiming;
-
-        if (crosshair != null)
-            crosshair.SetActive(isAiming);
-
-        if (isAiming &&
-            Input.GetMouseButton(0) &&
-            Time.time >= nextFireTime &&
-            !IsPointerOverUI())
+        if (player != null && Input.GetMouseButton(0))
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            if (Time.time >= nextFireTime)
+            {
+                Shoot();
+                nextFireTime = Time.time + fireRate;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            StartCoroutine(weaponAmmo.Reload());
         }
     }
 
     void Shoot()
     {
-        if (gunAudio != null)
-            gunAudio.PlayOneShot(gunAudio.clip);
+        if (!weaponAmmo.CanShoot())
+            return;
+
+        weaponAmmo.Shoot();
 
         if (muzzleFlash != null)
             muzzleFlash.Play();
 
-        if (gun != null)
-            gun.Play();
+        if (gunAudio != null)
+            gunAudio.Play();
 
-        Debug.DrawRay(bulletSpawnPoint.position, bulletSpawnPoint.forward * 100f, Color.red, 1f);
-    }
-
-    bool IsPointerOverUI()
-    {
-        if (EventSystem.current != null)
-            return EventSystem.current.IsPointerOverGameObject();
-
-        return false;
+        Debug.Log("Disparo");
     }
 }
