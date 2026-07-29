@@ -1,52 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerShooting : MonoBehaviour
 {
-    [Header("Fire")]
-    public float fireRate = 0.15f;
+    [Header("Shooting Settings")]
+    public Transform bulletSpawnPoint;
+    public float fireRate = 0.2f;
 
-    [Header("Ammo")]
-    public WeaponAmmo weaponAmmo;
+    private bool isAiming;
+    private float nextFireTime;
 
-    [Header("Player")]
     public PlayerMovement player;
 
     [Header("Effects")]
     public ParticleSystem muzzleFlash;
     public AudioSource gunAudio;
+    public Animation gun;
 
-    private float nextFireTime;
+    [Header("UI")]
+    public GameObject crosshair;
 
     void Update()
     {
-        if (player != null && Input.GetMouseButton(0))
-        {
-            if (Time.time >= nextFireTime)
-            {
-                Shoot();
-                nextFireTime = Time.time + fireRate;
-            }
-        }
+        isAiming = player.isAiming;
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (crosshair != null)
+            crosshair.SetActive(isAiming);
+
+        if (isAiming &&
+            Input.GetMouseButton(0) &&
+            Time.time >= nextFireTime &&
+            !IsPointerOverUI())
         {
-            StartCoroutine(weaponAmmo.Reload());
+            Shoot();
+            nextFireTime = Time.time + fireRate;
         }
     }
 
     void Shoot()
     {
-        if (!weaponAmmo.CanShoot())
-            return;
-
-        weaponAmmo.Shoot();
+        if (gunAudio != null)
+            gunAudio.PlayOneShot(gunAudio.clip);
 
         if (muzzleFlash != null)
             muzzleFlash.Play();
 
-        if (gunAudio != null)
-            gunAudio.Play();
+        if (gun != null)
+            gun.Play();
 
-        Debug.Log("Disparo");
+        Debug.DrawRay(bulletSpawnPoint.position, bulletSpawnPoint.forward * 100f, Color.red, 1f);
+    }
+
+    bool IsPointerOverUI()
+    {
+        if (EventSystem.current != null)
+            return EventSystem.current.IsPointerOverGameObject();
+
+        return false;
     }
 }
